@@ -109,7 +109,7 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <section className="py-4 bg-white border-b sticky top-[64px] z-30 shadow-sm overflow-x-auto no-scrollbar">
+      <section className="py-4 bg-white border-b sticky top-[64px] z-30 overflow-x-auto no-scrollbar">
         <div className="container mx-auto px-4 flex justify-center">
           <div className="flex flex-nowrap gap-8 pb-2">
             {categoriesWithIcon.map((categoryItem) => (
@@ -120,7 +120,7 @@ function ShoppingHome() {
                 }
                 className="flex flex-col items-center justify-center cursor-pointer group"
               >
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 group-hover:bg-primary/10 group-hover:shadow-md transition-all duration-300">
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 group-hover:bg-primary/10 transition-all duration-300">
                   <categoryItem.icon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
                 </div>
                 <span className="mt-2 text-[10px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-primary transition-colors whitespace-nowrap">
@@ -179,10 +179,11 @@ function ShoppingHome() {
           <h2 className="text-3xl font-bold text-center mb-8">
             Feature Products
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                 <ShoppingProductTile
+                  key={productItem._id || productItem.id}
                   product={productItem}
                   handleAddtoCart={handleAddtoCart}
                 />

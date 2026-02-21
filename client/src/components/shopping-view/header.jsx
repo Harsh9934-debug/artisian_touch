@@ -1,4 +1,4 @@
-import { HousePlug, LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
+import { LogOut, Menu, UserCog, User, Heart, ShoppingBag, Search } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 
-function MenuItems() {
+function MenuItems({ keyword, setKeyword, handleSearch }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,8 +33,7 @@ function MenuItems() {
     sessionStorage.removeItem("filters");
     const currentFilter =
       getCurrentMenuItem.id !== "home" &&
-        getCurrentMenuItem.id !== "products" &&
-        getCurrentMenuItem.id !== "search"
+        getCurrentMenuItem.id !== "products"
         ? {
           category: [getCurrentMenuItem.id],
         }
@@ -50,21 +49,40 @@ function MenuItems() {
   }
 
   return (
-    <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-6 lg:flex-row">
+    <nav className="flex flex-col mb-3 lg:mb-0 lg:items-center gap-4 lg:gap-6 lg:flex-row h-full">
       {shoppingViewHeaderMenuItems.map((menuItem) => (
-        <Label
-          onClick={() => handleNavigate(menuItem)}
-          className="text-sm font-medium cursor-pointer"
+        <div
           key={menuItem.id}
+          onClick={() => handleNavigate(menuItem)}
+          className="group relative flex items-center lg:h-[80px] py-2 lg:py-0 cursor-pointer"
         >
-          {menuItem.label}
-        </Label>
+          <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase group-hover:text-primary transition-colors">
+            {menuItem.label}
+          </span>
+          <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[#ee5f73] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+        </div>
       ))}
+      <div className="hidden lg:flex items-center ml-10">
+        <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase mr-4">
+          SEARCH
+        </span>
+        <div className="relative w-[300px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-[18px] h-[18px]" />
+          <input
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={handleSearch}
+            type="text"
+            placeholder="Search for products, brands and more"
+            className="w-full bg-[#f5f5f6] rounded-md py-[10px] pl-[40px] pr-4 text-sm text-[#282c3f] placeholder-gray-500 outline-none focus:bg-white focus:border focus:border-gray-200 transition-colors"
+          />
+        </div>
+      </div>
     </nav>
   );
 }
 
-function HeaderRightContent() {
+function HeaderRightContent({ isMobile }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
@@ -82,39 +100,15 @@ function HeaderRightContent() {
   console.log(cartItems, "sangam");
 
   return (
-    <div className="flex lg:items-center lg:flex-row flex-col gap-4">
-      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
-        <Button
-          onClick={() => setOpenCartSheet(true)}
-          variant="outline"
-          size="icon"
-          className="relative"
-        >
-          <ShoppingCart className="w-6 h-6" />
-          <span className="absolute top-[-5px] right-[2px] font-bold text-sm">
-            {cartItems?.items?.length || 0}
-          </span>
-          <span className="sr-only">User cart</span>
-        </Button>
-        <UserCartWrapper
-          setOpenCartSheet={setOpenCartSheet}
-          cartItems={
-            cartItems && cartItems.items && cartItems.items.length > 0
-              ? cartItems.items
-              : []
-          }
-        />
-      </Sheet>
-
+    <div className="flex items-center flex-row gap-6 lg:gap-8">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="bg-black">
-            <AvatarFallback className="bg-black text-white font-extrabold">
-              {user?.userName[0].toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <div className={`flex flex-col items-center justify-center cursor-pointer group ${!isMobile ? "hidden lg:flex" : ""}`}>
+            <User className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
+            <span className="text-[11px] font-bold mt-1 text-black">Profile</span>
+          </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="right" className="w-56">
+        <DropdownMenuContent side="bottom" align="end" className="w-56 mt-4">
           <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate("/shop/account")}>
@@ -128,37 +122,87 @@ function HeaderRightContent() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <div className={`flex flex-col items-center justify-center cursor-pointer group ${!isMobile ? "hidden lg:flex" : ""}`}>
+        <Heart className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
+        <span className="text-[11px] font-bold mt-1 text-black">Wishlist</span>
+      </div>
+
+      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+        <div onClick={() => setOpenCartSheet(true)} className="flex flex-col items-center justify-center cursor-pointer group relative">
+          <ShoppingBag className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
+          <span className="text-[11px] font-bold mt-1 text-black">Bag</span>
+          <span className="absolute top-[-6px] right-[-6px] bg-[#ff3f6c] text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+            {cartItems?.items?.length || 0}
+          </span>
+        </div>
+        <UserCartWrapper
+          setOpenCartSheet={setOpenCartSheet}
+          cartItems={
+            cartItems && cartItems.items && cartItems.items.length > 0
+              ? cartItems.items
+              : []
+          }
+        />
+      </Sheet>
     </div>
   );
 }
 
 function ShoppingHeader() {
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
+
+  function handleSearch(e) {
+    if (e.key === "Enter" && keyword.trim() !== "") {
+      navigate(`/shop/search?keyword=${keyword}`);
+    }
+  }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 w-full border-b bg-white shadow-sm">
+      <div className="flex h-[80px] items-center px-4 md:px-6 lg:px-10 max-w-[1600px] mx-auto">
+        <Link to="/shop/home" className="flex items-center gap-2 mr-8 shrink-0">
           <img src="/logo.png" alt="Logo" className="h-10 w-auto" />
         </Link>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="lg:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle header menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-full max-w-xs">
-            <MenuItems />
-            <HeaderRightContent />
-          </SheetContent>
-        </Sheet>
-        <div className="hidden lg:block">
-          <MenuItems />
+        <div className="hidden lg:flex items-center flex-shrink-0">
+          <MenuItems keyword={keyword} setKeyword={setKeyword} handleSearch={handleSearch} />
         </div>
 
-        <div className="hidden lg:block">
+        {/* Mobile Search Bar (Only visible on small screens since desktop is in menu) */}
+        <div className="lg:hidden flex-1 max-w-lg px-4 ml-auto">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-[16px] h-[16px]" />
+            <input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={handleSearch}
+              type="text"
+              placeholder="Search..."
+              className="w-full bg-[#f5f5f6] rounded-md py-[8px] pl-[36px] pr-4 text-xs text-[#282c3f] placeholder-gray-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Right: Icons & Mobile Menu */}
+        <div className="ml-auto lg:ml-0 flex items-center gap-4">
           <HeaderRightContent />
+          {/* Mobile Menu */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="lg:hidden border-none shadow-none">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle header menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full max-w-xs pt-10">
+              <MenuItems keyword={keyword} setKeyword={setKeyword} handleSearch={handleSearch} />
+              <div className="mt-8 border-t pt-8">
+                <HeaderRightContent isMobile={true} />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

@@ -6,23 +6,28 @@ const initialState = {
   isLoading: false,
   productList: [],
   productDetails: null,
+  hasMore: true,
 };
 
 export const fetchAllFilteredProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async ({ filterParams, sortParams }) => {
-    console.log(fetchAllFilteredProducts, "fetchAllFilteredProducts");
-
     const query = new URLSearchParams({
       ...filterParams,
       sortBy: sortParams,
+      page: filterParams?.page || 1,
     });
+
+    const cacheKey = `products_${query.toString()}`;
+    const cachedData = localStorage.getItem(cacheKey);
 
     const result = await axios.get(
       `${API_URL}/api/shop/products/get?${query}`
     );
 
-    console.log(result);
+    if (result?.data?.success) {
+      localStorage.setItem(cacheKey, JSON.stringify(result?.data));
+    }
 
     return result?.data;
   }
@@ -54,11 +59,21 @@ const shoppingProductSlice = createSlice({
       })
       .addCase(fetchAllFilteredProducts.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.productList = action.payload.data;
+
+        // If it's page 2 or higher, append the products
+        if (action.meta.arg.filterParams?.page > 1) {
+          state.productList = [...state.productList, ...action.payload.data];
+        } else {
+          state.productList = action.payload.data;
+        }
+
+        // Check if there are more products to load (assuming limit is 10)
+        state.hasMore = action.payload.data.length === 10;
       })
       .addCase(fetchAllFilteredProducts.rejected, (state, action) => {
         state.isLoading = false;
         state.productList = [];
+        state.hasMore = false;
       })
       .addCase(fetchProductDetails.pending, (state, action) => {
         state.isLoading = true;

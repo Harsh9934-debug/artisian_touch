@@ -22,14 +22,14 @@ function ShoppingCheckout() {
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
       ? cartItems.items.reduce(
-          (sum, currentItem) =>
-            sum +
-            (currentItem?.salePrice > 0
-              ? currentItem?.salePrice
-              : currentItem?.price) *
-              currentItem?.quantity,
-          0
-        )
+        (sum, currentItem) =>
+          sum +
+          (currentItem?.salePrice > 0
+            ? currentItem?.salePrice
+            : currentItem?.price) *
+          currentItem?.quantity,
+        0
+      )
       : 0;
 
   function handleInitiatePaypalPayment() {
@@ -96,23 +96,26 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="relative h-[300px] w-full overflow-hidden">
-        <img src={img} className="h-full w-full object-cover object-center" />
+    <div className="flex flex-col container mx-auto px-4 py-8">
+      {/* Products Top Section */}
+      <div className="flex flex-col gap-4 mb-8">
+        <h2 className="text-xl font-bold border-b pb-2">Your Items</h2>
+        {cartItems && cartItems.items && cartItems.items.length > 0
+          ? cartItems.items.map((item) => (
+            <UserCartItemsContent key={item.productId || item.id} cartItem={item} />
+          ))
+          : <p>Your cart is empty.</p>}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
+
+      {/* Address and Checkout Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
         <Address
           selectedId={currentSelectedAddress}
           setCurrentSelectedAddress={setCurrentSelectedAddress}
         />
         <div className="flex flex-col gap-4">
-          {cartItems && cartItems.items && cartItems.items.length > 0
-            ? cartItems.items.map((item) => (
-                <UserCartItemsContent cartItem={item} />
-              ))
-            : null}
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between border-b pb-2">
               <span className="font-bold">Total</span>
               <span className="font-bold">${totalCartAmount}</span>
             </div>

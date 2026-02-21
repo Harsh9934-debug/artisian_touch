@@ -40,7 +40,11 @@ const getFilteredProducts = async (req, res) => {
         break;
     }
 
-    const products = await Product.find(filters).sort(sort);
+    const limitObj = parseInt(req.query.limit) || 10;
+    const pageObj = parseInt(req.query.page) || 1;
+    const skip = (pageObj - 1) * limitObj;
+
+    const products = await Product.find(filters).sort(sort).skip(skip).limit(limitObj);
 
     res.status(200).json({
       success: true,

@@ -16,7 +16,7 @@ import {
   fetchProductDetails,
 } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
@@ -38,13 +38,15 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
+  const { productList, productDetails, hasMore } = useSelector(
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
+  const [page, setPage] = useState(1);
+  const observerTarget = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
 
@@ -73,6 +75,7 @@ function ShoppingListing() {
     }
 
     setFilters(cpyFilters);
+    setPage(1); // Reset page on filter change
     sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
   }
 
@@ -130,18 +133,37 @@ function ShoppingListing() {
   useEffect(() => {
     if (filters !== null && sort !== null)
       dispatch(
-        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+        fetchAllFilteredProducts({ filterParams: { ...filters, page }, sortParams: sort })
       );
-  }, [dispatch, sort, filters]);
+  }, [dispatch, sort, filters, page]);
 
+  useEffect(() => {
+    let currentTarget = null;
+    let observer = null;
 
+    if (observerTarget.current) {
+      currentTarget = observerTarget.current;
+      observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget && observer) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [observerTarget, productList]);
 
   console.log(productList, "productListproductListproductList");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
-      <div className="bg-background w-full rounded-lg shadow-sm">
+      <div className="bg-background w-full rounded-lg">
         <div className="p-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-extrabold">All Products</h2>
           <div className="flex items-center gap-3">
@@ -174,16 +196,23 @@ function ShoppingListing() {
             </DropdownMenu>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
           {productList && productList.length > 0
             ? productList.map((productItem) => (
               <ShoppingProductTile
+                key={productItem._id || productItem.id}
                 product={productItem}
                 handleAddtoCart={handleAddtoCart}
               />
             ))
-            : null}
+            : <div className="col-span-full text-center text-gray-500 py-10 text-xl font-medium">No products found.</div>}
         </div>
+
+        {productList && productList.length > 0 && hasMore && (
+          <div ref={observerTarget} className="flex justify-center mt-6 mb-8 w-full h-10">
+            <span className="text-gray-500 font-medium animate-pulse">Loading more...</span>
+          </div>
+        )}
       </div>
 
     </div>

@@ -115,7 +115,7 @@ function ProductDetailsPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div className="relative overflow-hidden rounded-2xl shadow-lg border border-gray-100 bg-white p-2">
+                <div className="relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-2">
                     <img
                         src={productDetails?.image}
                         alt={productDetails?.title}
@@ -171,13 +171,13 @@ function ProductDetailsPage() {
                     </div>
                     <div className="mt-4 flex flex-col sm:flex-row gap-4">
                         {productDetails?.totalStock === 0 ? (
-                            <Button className="w-full sm:flex-1 py-7 text-lg bg-gray-100 text-gray-400 cursor-not-allowed border-none shadow-none" disabled>
+                            <Button className="w-full sm:flex-1 py-7 text-lg bg-gray-100 text-gray-400 cursor-not-allowed border-none" disabled>
                                 Out of Stock
                             </Button>
                         ) : (
                             <>
                                 <Button
-                                    className="w-full sm:flex-1 py-7 text-lg font-bold bg-[#1a1c24] hover:bg-[#2d313d] text-white rounded-2xl shadow-xl transition-all active:scale-95"
+                                    className="w-full sm:flex-1 py-7 text-lg font-bold bg-[#1a1c24] hover:bg-[#2d313d] text-white rounded-2xl transition-all active:scale-95"
                                     onClick={() =>
                                         handleAddToCart(
                                             productDetails?._id,
@@ -235,7 +235,7 @@ function ProductDetailsPage() {
                         {reviews && reviews.length > 0 ? (
                             reviews.map((reviewItem) => (
                                 <div key={reviewItem?._id} className="flex gap-4 p-6 rounded-3xl bg-gray-50 border border-transparent hover:border-gray-200 transition-all">
-                                    <Avatar className="w-14 h-14 border-2 border-white shadow-sm">
+                                    <Avatar className="w-14 h-14 border-2 border-white">
                                         <AvatarFallback className="bg-primary text-white font-black text-lg">
                                             {reviewItem?.userName[0].toUpperCase()}
                                         </AvatarFallback>
@@ -269,7 +269,7 @@ function ProductDetailsPage() {
                 </div>
 
                 <div className="lg:col-span-1">
-                    <div className="sticky top-24 p-8 rounded-[2rem] border-2 border-gray-100 bg-white shadow-sm flex flex-col gap-6">
+                    <div className="sticky top-24 p-8 rounded-[2rem] border-2 border-gray-100 bg-white flex flex-col gap-6">
                         <div>
                             <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">Write a review</h3>
                             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Help others decide</p>
@@ -300,7 +300,7 @@ function ProductDetailsPage() {
                         <Button
                             onClick={handleAddReview}
                             disabled={reviewMsg.trim() === "" || rating === 0}
-                            className="w-full py-7 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95"
+                            className="w-full py-7 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95"
                         >
                             Submit Review
                         </Button>

@@ -1,6 +1,5 @@
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { fetchProductDetails } from "@/store/shop/products-slice";
@@ -13,9 +12,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 function SearchProducts() {
-  const [keyword, setKeyword] = useState("");
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
   const { productDetails } = useSelector((state) => state.shopProducts);
@@ -35,6 +34,13 @@ function SearchProducts() {
       dispatch(resetSearchResults());
     }
   }, [keyword]);
+
+  useEffect(() => {
+    const urlKeyword = searchParams.get("keyword");
+    if (urlKeyword !== null && urlKeyword !== keyword) {
+      setKeyword(urlKeyword);
+    }
+  }, [searchParams]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     console.log(cartItems);
@@ -86,17 +92,6 @@ function SearchProducts() {
 
   return (
     <div className="container mx-auto md:px-6 px-4 py-8">
-      <div className="flex justify-center mb-8">
-        <div className="w-full flex items-center">
-          <Input
-            value={keyword}
-            name="keyword"
-            onChange={(event) => setKeyword(event.target.value)}
-            className="py-6"
-            placeholder="Search Products..."
-          />
-        </div>
-      </div>
       {!searchResults.length ? (
         <h1 className="text-5xl font-extrabold">No result found!</h1>
       ) : null}
