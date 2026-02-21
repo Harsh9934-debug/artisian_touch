@@ -16,6 +16,7 @@ const shopReviewRouter = require("./routes/shop/review-routes");
 const shopWishlistRouter = require("./routes/shop/wishlist-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
+const commonUserRouter = require("./routes/common/user-routes");
 const clerkWebhooksRouter = require("./routes/webhooks/clerk-webhooks");
 
 //create a database connection -> u can also
@@ -79,6 +80,7 @@ app.use("/api/shop/order", protect, shopOrderRouter);
 app.use("/api/shop/wishlist", protect, shopWishlistRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
+app.use("/api/common/user", protect, commonUserRouter);
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
 // Trigger backend nodemon restart

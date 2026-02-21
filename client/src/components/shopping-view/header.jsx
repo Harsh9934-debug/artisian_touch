@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import { Label } from "../ui/label";
-import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
+import { useAuth, useUser, UserButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 
 function MenuItems({ keyword, setKeyword, handleSearch }) {
   const navigate = useNavigate();
@@ -141,12 +141,22 @@ function HeaderRightContent({ isMobile }) {
             }
           />
         </Sheet>
-        <div onClick={handleLogout} className="group relative flex items-center py-2 cursor-pointer">
-          <LogOut className="mr-4 h-5 w-5 text-gray-600 group-hover:text-primary transition-colors" />
-          <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase group-hover:text-primary transition-colors">
-            Logout
-          </span>
-        </div>
+        <SignedIn>
+          <div onClick={handleLogout} className="group relative flex items-center py-2 cursor-pointer">
+            <LogOut className="mr-4 h-5 w-5 text-gray-600 group-hover:text-primary transition-colors" />
+            <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase group-hover:text-primary transition-colors">
+              Logout
+            </span>
+          </div>
+        </SignedIn>
+        <SignedOut>
+          <div onClick={() => navigate("/auth/login")} className="group relative flex items-center py-2 cursor-pointer">
+            <User className="mr-4 h-5 w-5 text-gray-600 group-hover:text-primary transition-colors" />
+            <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase group-hover:text-primary transition-colors">
+              Login
+            </span>
+          </div>
+        </SignedOut>
       </div>
     );
   }
@@ -154,7 +164,14 @@ function HeaderRightContent({ isMobile }) {
   return (
     <div className="flex items-center flex-row gap-6 lg:gap-8">
       <div className="hidden lg:flex flex-col items-center justify-center cursor-pointer group mt-1">
-        <UserButton />
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        <SignedOut>
+          <Button onClick={() => navigate("/auth/login")} variant="outline" className="text-xs font-bold uppercase tracking-widest border-[#1a1c24] text-[#1a1c24] hover:bg-[#1a1c24] hover:text-white transition-all rounded-none px-6">
+            Login
+          </Button>
+        </SignedOut>
       </div>
 
       <div

@@ -12,7 +12,7 @@ function CheckAuth({ children }) {
 
   if (location.pathname === "/") {
     if (!isSignedIn) {
-      return <Navigate to="/auth/login" />;
+      return <Navigate to="/shop/home" />;
     } else {
       if (role === "admin") {
         return <Navigate to="/admin/dashboard" />;
@@ -26,7 +26,11 @@ function CheckAuth({ children }) {
     !isSignedIn &&
     !(
       location.pathname.includes("/login") ||
-      location.pathname.includes("/register")
+      location.pathname.includes("/register") ||
+      location.pathname.includes("/shop/home") ||
+      location.pathname.includes("/shop/listing") ||
+      location.pathname.includes("/shop/search") ||
+      location.pathname.includes("/shop/product")
     )
   ) {
     return <Navigate to="/auth/login" />;

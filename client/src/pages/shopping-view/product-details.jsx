@@ -12,15 +12,17 @@ import StarRatingComponent from "@/components/common/star-rating";
 import { useEffect, useState } from "react";
 import { addReview, getReviews } from "@/store/shop/review-slice";
 import { addToWishlist, deleteWishlistItem, fetchWishlistItems } from "@/store/shop/wishlist-slice";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import { useUser } from "@clerk/clerk-react";
 
 function ProductDetailsPage() {
     const { id } = useParams();
     const [reviewMsg, setReviewMsg] = useState("");
     const [rating, setRating] = useState(0);
     const dispatch = useDispatch();
-    const { user } = useSelector((state) => state.auth);
+    const { user } = useUser();
+    const navigate = useNavigate();
     const { cartItems } = useSelector((state) => state.shopCart);
     const { reviews } = useSelector((state) => state.shopReview);
     const { productDetails, productList, isLoading } = useSelector((state) => state.shopProducts);
@@ -33,6 +35,14 @@ function ProductDetailsPage() {
         : false;
 
     function handleWishlistAction() {
+        if (!user) {
+            toast({
+                title: "Please login to add items to wishlist",
+                variant: "destructive",
+            });
+            navigate("/auth/login");
+            return;
+        }
         if (isInWishlist) {
             dispatch(deleteWishlistItem({ userId: user?.id, productId: productDetails?._id })).then((data) => {
                 if (data?.payload?.success) {
@@ -55,6 +65,14 @@ function ProductDetailsPage() {
     }
 
     function handleAddToCart(getCurrentProductId, getTotalStock) {
+        if (!user) {
+            toast({
+                title: "Please login to add items to cart",
+                variant: "destructive",
+            });
+            navigate("/auth/login");
+            return;
+        }
         let getCartItems = cartItems.items || [];
 
         if (getCartItems.length) {
@@ -90,6 +108,14 @@ function ProductDetailsPage() {
     }
 
     function handleAddReview() {
+        if (!user) {
+            toast({
+                title: "Please login to add a review",
+                variant: "destructive",
+            });
+            navigate("/auth/login");
+            return;
+        }
         dispatch(
             addReview({
                 productId: productDetails?._id,

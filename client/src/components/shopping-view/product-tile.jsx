@@ -24,6 +24,14 @@ function ShoppingProductTile({
     : false;
 
   function handleWishlistAction() {
+    if (!user) {
+      toast({
+        title: "Please login to add items to wishlist",
+        variant: "destructive",
+      });
+      navigate("/auth/login");
+      return;
+    }
     if (isInWishlist) {
       dispatch(deleteWishlistItem({ userId: user?.id, productId: product?._id })).then((data) => {
         if (data?.payload?.success) {

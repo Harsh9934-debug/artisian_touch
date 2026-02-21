@@ -54,6 +54,14 @@ function ShoppingHome() {
 
 
   function handleAddtoCart(getCurrentProductId) {
+    if (!user) {
+      toast({
+        title: "Please login to add items to cart",
+        variant: "destructive",
+      });
+      navigate("/auth/login");
+      return;
+    }
     dispatch(
       addToCart({
         userId: user?.id,
