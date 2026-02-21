@@ -1,11 +1,12 @@
 import { Minus, Plus, Trash } from "lucide-react";
 import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser } from "@clerk/clerk-react";
 import { deleteCartItem, updateCartQuantity } from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 
 function UserCartItemsContent({ cartItem }) {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const { cartItems } = useSelector((state) => state.shopCart);
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();

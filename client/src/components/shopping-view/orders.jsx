@@ -12,6 +12,7 @@ import {
 } from "../ui/table";
 import ShoppingOrderDetailsView from "./order-details";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser } from "@clerk/clerk-react";
 import {
   getAllOrdersByUserId,
   getOrderDetails,
@@ -22,7 +23,7 @@ import { Badge } from "../ui/badge";
 function ShoppingOrders() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const { orderList, orderDetails } = useSelector((state) => state.shopOrder);
 
   function handleFetchOrderDetails(getId) {
@@ -67,10 +68,10 @@ function ShoppingOrders() {
                     <TableCell>
                       <Badge
                         className={`py-1 px-3 ${orderItem?.orderStatus === "confirmed"
-                            ? "bg-green-500"
-                            : orderItem?.orderStatus === "rejected"
-                              ? "bg-red-600"
-                              : "bg-black"
+                          ? "bg-green-500"
+                          : orderItem?.orderStatus === "rejected"
+                            ? "bg-red-600"
+                            : "bg-black"
                           }`}
                       >
                         {orderItem?.orderStatus}

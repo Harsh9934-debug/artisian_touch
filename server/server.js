@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const authRouter = require("./routes/auth/auth-routes");
+const { clerkMiddleware, requireAuth } = require("@clerk/express");
 const adminProductsRouter = require("./routes/admin/products-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
 
@@ -16,6 +16,7 @@ const shopReviewRouter = require("./routes/shop/review-routes");
 const shopWishlistRouter = require("./routes/shop/wishlist-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
+const clerkWebhooksRouter = require("./routes/webhooks/clerk-webhooks");
 
 //create a database connection -> u can also
 //create a separate file for this and then import/use that file here
@@ -44,18 +45,38 @@ app.use(
 );
 
 app.use(cookieParser());
+
+// Webhooks must be parsed as raw buffers before express.json()
+app.use("/api/webhooks", clerkWebhooksRouter);
+
 app.use(express.json());
-app.use("/api/auth", authRouter);
-app.use("/api/admin/products", adminProductsRouter);
-app.use("/api/admin/orders", adminOrderRouter);
+
+// Apply Clerk Middleware to populate req.auth
+app.use(clerkMiddleware());
+
+// Enforce that any route expecting a userId interacts with the correct session user
+const enforceOwnership = (req, res, next) => {
+  const requestUserId = req.body.userId || req.params.userId;
+  if (requestUserId && requestUserId !== req.auth.userId) {
+    return res.status(403).json({ success: false, message: "Forbidden" });
+  }
+  next();
+};
+
+const protect = [requireAuth(), enforceOwnership];
+
+// API Routes
+app.use("/api/admin/products", protect, adminProductsRouter);
+app.use("/api/admin/orders", protect, adminOrderRouter);
 
 app.use("/api/shop/products", shopProductsRouter);
-app.use("/api/shop/cart", shopCartRouter);
-app.use("/api/shop/address", shopAddressRouter);
-app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
 app.use("/api/shop/review", shopReviewRouter);
-app.use("/api/shop/wishlist", shopWishlistRouter);
+
+app.use("/api/shop/cart", protect, shopCartRouter);
+app.use("/api/shop/address", protect, shopAddressRouter);
+app.use("/api/shop/order", protect, shopOrderRouter);
+app.use("/api/shop/wishlist", protect, shopWishlistRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 

@@ -7,10 +7,11 @@ import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@clerk/clerk-react";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);

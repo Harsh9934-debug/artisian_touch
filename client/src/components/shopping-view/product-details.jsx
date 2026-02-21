@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser } from "@clerk/clerk-react";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "../ui/use-toast";
 import { setProductDetails } from "@/store/shop/products-slice";
@@ -17,7 +18,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
 
@@ -101,7 +102,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const averageReview =
     reviews && reviews.length > 0
       ? reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
-        reviews.length
+      reviews.length
       : 0;
 
   return (
@@ -125,9 +126,8 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
           </div>
           <div className="flex items-center justify-between">
             <p
-              className={`text-3xl font-bold text-primary ${
-                productDetails?.salePrice > 0 ? "line-through" : ""
-              }`}
+              className={`text-3xl font-bold text-primary ${productDetails?.salePrice > 0 ? "line-through" : ""
+                }`}
             >
               ${productDetails?.price}
             </p>

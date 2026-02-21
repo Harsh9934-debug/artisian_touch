@@ -1,8 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { checkAuth } from "./store/auth-slice";
+import { lazy, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@clerk/clerk-react";
 
 import AuthLayout from "./components/auth/layout";
 import AdminLayout from "./components/admin-view/layout";
@@ -28,18 +27,9 @@ const UnauthPage = lazy(() => import("./pages/unauth-page"));
 const NotFound = lazy(() => import("./pages/not-found"));
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useSelector(
-    (state) => state.auth
-  );
-  const dispatch = useDispatch();
+  const { isLoaded } = useAuth();
 
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
-
-  if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
-
-  console.log(isLoading, user);
+  if (!isLoaded) return <Skeleton className="w-[800px] bg-black h-[600px]" />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
@@ -48,27 +38,24 @@ function App() {
           <Route
             path="/"
             element={
-              <CheckAuth
-                isAuthenticated={isAuthenticated}
-                user={user}
-              ></CheckAuth>
+              <CheckAuth />
             }
           />
           <Route
             path="/auth"
             element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <CheckAuth>
                 <AuthLayout />
               </CheckAuth>
             }
           >
-            <Route path="login" element={<AuthLogin />} />
-            <Route path="register" element={<AuthRegister />} />
+            <Route path="login/*" element={<AuthLogin />} />
+            <Route path="register/*" element={<AuthRegister />} />
           </Route>
           <Route
             path="/admin"
             element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <CheckAuth>
                 <AdminLayout />
               </CheckAuth>
             }
@@ -81,7 +68,7 @@ function App() {
           <Route
             path="/shop"
             element={
-              <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <CheckAuth>
                 <ShoppingLayout />
               </CheckAuth>
             }

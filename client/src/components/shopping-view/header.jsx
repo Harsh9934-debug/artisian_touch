@@ -18,12 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import { Label } from "../ui/label";
+import { useAuth, useUser, UserButton } from "@clerk/clerk-react";
 
 function MenuItems({ keyword, setKeyword, handleSearch }) {
   const navigate = useNavigate();
@@ -81,7 +81,8 @@ function MenuItems({ keyword, setKeyword, handleSearch }) {
 }
 
 function HeaderRightContent({ isMobile }) {
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
+  const { signOut } = useAuth();
   const { cartItems } = useSelector((state) => state.shopCart);
   const { wishlistItems } = useSelector((state) => state.shopWishlist);
   const [openCartSheet, setOpenCartSheet] = useState(false);
@@ -89,7 +90,7 @@ function HeaderRightContent({ isMobile }) {
   const dispatch = useDispatch();
 
   function handleLogout() {
-    dispatch(logoutUser());
+    signOut();
   }
 
   useEffect(() => {
@@ -152,27 +153,9 @@ function HeaderRightContent({ isMobile }) {
 
   return (
     <div className="flex items-center flex-row gap-6 lg:gap-8">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="hidden lg:flex flex-col items-center justify-center cursor-pointer group">
-            <User className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
-            <span className="text-[11px] font-bold mt-1 text-black">Profile</span>
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" className="w-56 mt-4">
-          <DropdownMenuLabel>Logged in as {user?.userName}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/shop/account")}>
-            <UserCog className="mr-2 h-4 w-4" />
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="hidden lg:flex flex-col items-center justify-center cursor-pointer group mt-1">
+        <UserButton />
+      </div>
 
       <div
         onClick={() => navigate("/shop/wishlist")}
@@ -207,7 +190,6 @@ function HeaderRightContent({ isMobile }) {
 }
 
 function ShoppingHeader() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
   const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 

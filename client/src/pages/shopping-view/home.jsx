@@ -23,6 +23,7 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
 import { getFeatureImages } from "@/store/common-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
+import { useUser } from "@clerk/clerk-react";
 
 
 function ShoppingHome() {
@@ -34,7 +35,7 @@ function ShoppingHome() {
 
 
 
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -98,15 +99,18 @@ function ShoppingHome() {
     <div className="flex flex-col min-h-screen">
       <div className="relative w-full h-[300px] md:h-[450px] lg:h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((slide, index) => (
-            <img
-              src={slide?.image}
-              key={index}
-              loading={index === 0 ? "eager" : "lazy"}
-              className={`${index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
-            />
-          ))
+          ? featureImageList.map((slide, index) => {
+            if (!slide?.image) return null;
+            return (
+              <img
+                src={slide?.image}
+                key={index}
+                loading={index === 0 ? "eager" : "lazy"}
+                className={`${index === currentSlide ? "opacity-100" : "opacity-0"
+                  } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
+              />
+            );
+          })
           : null}
         <Button
           variant="outline"

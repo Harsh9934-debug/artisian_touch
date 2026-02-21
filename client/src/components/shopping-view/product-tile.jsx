@@ -5,6 +5,7 @@ import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { Heart, Share2, Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser } from "@clerk/clerk-react";
 import { addToWishlist, deleteWishlistItem, fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -14,7 +15,7 @@ function ShoppingProductTile({
 }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const { wishlistItems } = useSelector((state) => state.shopWishlist);
   const { toast } = useToast();
 
