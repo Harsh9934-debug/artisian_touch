@@ -24,19 +24,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { getFeatureImages } from "@/store/common-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 
-const categoriesWithIcon = [
-  { id: "painting", label: "Painting", icon: Paintbrush },
-  { id: "drawing", label: "Drawing", icon: Pencil },
-  { id: "sculpting", label: "Sculpting", icon: Layers },
-  { id: "canvas", label: "Canvas", icon: Palette },
-  { id: "paper", label: "Paper & Journals", icon: Ruler },
-  { id: "calligraphy", label: "Calligraphy", icon: Brush },
-  { id: "embroidery", label: "Embroidery", icon: Scissors },
-  { id: "knitting", label: "Knitting", icon: Sparkles },
-  { id: "markers", label: "Markers", icon: Pencil },
-  { id: "accessories", label: "Accessories", icon: Palette },
-];
-
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -109,28 +96,6 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <section className="py-4 bg-white border-b sticky top-[64px] z-30 overflow-x-auto no-scrollbar">
-        <div className="container mx-auto px-4 flex justify-center">
-          <div className="flex flex-nowrap gap-8 pb-2">
-            {categoriesWithIcon.map((categoryItem) => (
-              <div
-                key={categoryItem.id}
-                onClick={() =>
-                  handleNavigateToListingPage(categoryItem, "category")
-                }
-                className="flex flex-col items-center justify-center cursor-pointer group"
-              >
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 group-hover:bg-primary/10 transition-all duration-300">
-                  <categoryItem.icon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
-                </div>
-                <span className="mt-2 text-[10px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-primary transition-colors whitespace-nowrap">
-                  {categoryItem.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
       <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (

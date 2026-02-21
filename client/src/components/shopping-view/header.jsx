@@ -63,9 +63,6 @@ function MenuItems({ keyword, setKeyword, handleSearch }) {
         </div>
       ))}
       <div className="hidden lg:flex items-center ml-10">
-        <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase mr-4">
-          SEARCH
-        </span>
         <div className="relative w-[300px]">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-[18px] h-[18px]" />
           <input
@@ -186,7 +183,7 @@ function ShoppingHeader() {
         </div>
 
         {/* Right: Icons & Mobile Menu */}
-        <div className="ml-auto lg:ml-0 flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-4">
           <HeaderRightContent />
           {/* Mobile Menu */}
           <Sheet>

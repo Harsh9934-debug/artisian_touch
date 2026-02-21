@@ -96,32 +96,35 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col container mx-auto px-4 py-8">
-      {/* Products Top Section */}
-      <div className="flex flex-col gap-4 mb-8">
-        <h2 className="text-xl font-bold border-b pb-2">Your Items</h2>
-        {cartItems && cartItems.items && cartItems.items.length > 0
-          ? cartItems.items.map((item) => (
-            <UserCartItemsContent key={item.productId || item.id} cartItem={item} />
-          ))
-          : <p>Your cart is empty.</p>}
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left Column: Address */}
+        <div className="flex-1">
+          <Address
+            selectedId={currentSelectedAddress}
+            setCurrentSelectedAddress={setCurrentSelectedAddress}
+          />
+        </div>
 
-      {/* Address and Checkout Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-        <Address
-          selectedId={currentSelectedAddress}
-          setCurrentSelectedAddress={setCurrentSelectedAddress}
-        />
-        <div className="flex flex-col gap-4">
-          <div className="space-y-4">
-            <div className="flex justify-between border-b pb-2">
-              <span className="font-bold">Total</span>
+        {/* Right Column: Order Summary */}
+        <div className="w-full lg:w-[450px] flex flex-col gap-6 lg:pl-8 lg:border-l">
+          <h2 className="text-xl font-bold border-b pb-4">Your Order</h2>
+          <div className="flex flex-col gap-4">
+            {cartItems && cartItems.items && cartItems.items.length > 0
+              ? cartItems.items.map((item) => (
+                <UserCartItemsContent key={item.productId || item.id} cartItem={item} />
+              ))
+              : <p className="text-gray-500">Your cart is empty.</p>}
+          </div>
+
+          <div className="space-y-4 mt-4">
+            <div className="flex justify-between border-t pt-4">
+              <span className="font-bold">Total Amount</span>
               <span className="font-bold">${totalCartAmount}</span>
             </div>
           </div>
-          <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
+          <div className="w-full mt-2">
+            <Button onClick={handleInitiatePaypalPayment} className="w-full h-12">
               {isPaymentStart
                 ? "Processing Paypal Payment..."
                 : "Checkout with Paypal"}
