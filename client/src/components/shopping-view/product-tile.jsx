@@ -105,11 +105,11 @@ function ShoppingProductTile({
 
           <div className="flex items-center gap-2 mt-auto pt-2">
             <span className="text-base font-bold text-gray-900">
-              ${product?.salePrice > 0 ? product?.salePrice : product?.price}
+              ₹{product?.salePrice > 0 ? product?.salePrice : product?.price}
             </span>
             {product?.salePrice > 0 && (
               <span className="text-xs text-gray-400 line-through font-medium">
-                ${product?.price}
+                ₹{product?.price}
               </span>
             )}
             {product?.salePrice > 0 && (

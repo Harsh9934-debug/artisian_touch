@@ -4,18 +4,19 @@ import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { createNewOrder } from "@/store/shop/order-slice";
-import { Navigate } from "react-router-dom";
+import { createNewOrder, capturePayment } from "@/store/shop/order-slice";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { useUser } from "@clerk/clerk-react";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useUser();
-  const { approvalURL } = useSelector((state) => state.shopOrder);
+  const { razorpayOrderId, orderId } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   console.log(currentSelectedAddress, "cartItems");
@@ -33,13 +34,12 @@ function ShoppingCheckout() {
       )
       : 0;
 
-  function handleInitiatePaypalPayment() {
+  function handleInitiateRazorpayPayment() {
     if (cartItems.length === 0) {
       toast({
         title: "Your cart is empty. Please add items to proceed",
         variant: "destructive",
       });
-
       return;
     }
     if (currentSelectedAddress === null) {
@@ -47,7 +47,6 @@ function ShoppingCheckout() {
         title: "Please select one address to proceed.",
         variant: "destructive",
       });
-
       return;
     }
 
@@ -73,28 +72,68 @@ function ShoppingCheckout() {
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
-      paymentMethod: "paypal",
+      paymentMethod: "razorpay",
       paymentStatus: "pending",
       totalAmount: totalCartAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
-      paymentId: "",
-      payerId: "",
     };
 
     dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
       if (data?.payload?.success) {
         setIsPaymemntStart(true);
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: data.payload.amount,
+          currency: data.payload.currency,
+          name: "Artisian Touch",
+          description: "Order Payment",
+          order_id: data.payload.razorpayOrderId,
+          handler: async function (response) {
+            const paymentData = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              orderId: data.payload.orderId,
+            };
+
+            dispatch(capturePayment(paymentData)).then((captureData) => {
+              if (captureData?.payload?.success) {
+                toast({
+                  title: "Payment successful! Your order is confirmed.",
+                });
+                navigate("/shop/paypal-return"); // Re-using existing success page for now or create new one
+              } else {
+                toast({
+                  title: "Payment verification failed.",
+                  variant: "destructive",
+                });
+              }
+              setIsPaymemntStart(false);
+            });
+          },
+          prefill: {
+            name: user?.fullName,
+            email: user?.primaryEmailAddress?.emailAddress,
+          },
+          theme: {
+            color: "#000000",
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
       } else {
         setIsPaymemntStart(false);
+        toast({
+          title: "Failed to create order. Please try again.",
+          variant: "destructive",
+        });
       }
     });
   }
 
-  if (approvalURL) {
-    window.location.href = approvalURL;
-  }
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -121,14 +160,14 @@ function ShoppingCheckout() {
           <div className="space-y-4 mt-4">
             <div className="flex justify-between border-t pt-4">
               <span className="font-bold">Total Amount</span>
-              <span className="font-bold">${totalCartAmount}</span>
+              <span className="font-bold">₹{totalCartAmount}</span>
             </div>
           </div>
           <div className="w-full mt-2">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full h-12">
+            <Button onClick={handleInitiateRazorpayPayment} className="w-full h-12">
               {isPaymentStart
-                ? "Processing Paypal Payment..."
-                : "Checkout with Paypal"}
+                ? "Processing Payment..."
+                : "Checkout with Razorpay"}
             </Button>
           </div>
         </div>

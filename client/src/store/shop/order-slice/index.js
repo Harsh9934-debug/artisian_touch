@@ -6,6 +6,7 @@ const initialState = {
   approvalURL: null,
   isLoading: false,
   orderId: null,
+  razorpayOrderId: null,
   orderList: [],
   orderDetails: null,
 };
@@ -24,12 +25,13 @@ export const createNewOrder = createAsyncThunk(
 
 export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
-  async ({ paymentId, payerId, orderId }) => {
+  async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId }) => {
     const response = await axios.post(
       `${API_URL}/api/shop/order/capture`,
       {
-        paymentId,
-        payerId,
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
         orderId,
       }
     );
@@ -77,6 +79,7 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.approvalURL = action.payload.approvalURL;
         state.orderId = action.payload.orderId;
+        state.razorpayOrderId = action.payload.razorpayOrderId;
         sessionStorage.setItem(
           "currentOrderId",
           JSON.stringify(action.payload.orderId)
@@ -86,6 +89,7 @@ const shoppingOrderSlice = createSlice({
         state.isLoading = false;
         state.approvalURL = null;
         state.orderId = null;
+        state.razorpayOrderId = null;
       })
       .addCase(getAllOrdersByUserId.pending, (state) => {
         state.isLoading = true;
@@ -111,6 +115,7 @@ const shoppingOrderSlice = createSlice({
       });
   },
 });
+
 
 export const { resetOrderDetails } = shoppingOrderSlice.actions;
 
