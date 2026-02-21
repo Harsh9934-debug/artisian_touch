@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import StarRatingComponent from "@/components/common/star-rating";
 import { useEffect, useState } from "react";
 import { addReview, getReviews } from "@/store/shop/review-slice";
+import { addToWishlist, deleteWishlistItem, fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import { useParams, Link } from "react-router-dom";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 
@@ -23,8 +24,31 @@ function ProductDetailsPage() {
     const { cartItems } = useSelector((state) => state.shopCart);
     const { reviews } = useSelector((state) => state.shopReview);
     const { productDetails, productList, isLoading } = useSelector((state) => state.shopProducts);
+    const { wishlistItems } = useSelector((state) => state.shopWishlist);
 
     const { toast } = useToast();
+
+    const isInWishlist = wishlistItems && wishlistItems.length > 0
+        ? wishlistItems.findIndex(item => item.productId === productDetails?._id) > -1
+        : false;
+
+    function handleWishlistAction() {
+        if (isInWishlist) {
+            dispatch(deleteWishlistItem({ userId: user?.id, productId: productDetails?._id })).then((data) => {
+                if (data?.payload?.success) {
+                    dispatch(fetchWishlistItems(user?.id));
+                    toast({ title: "Removed from wishlist" });
+                }
+            });
+        } else {
+            dispatch(addToWishlist({ userId: user?.id, productId: productDetails?._id })).then((data) => {
+                if (data?.payload?.success) {
+                    dispatch(fetchWishlistItems(user?.id));
+                    toast({ title: "Added to wishlist" });
+                }
+            });
+        }
+    }
 
     function handleRatingChange(getRating) {
         setRating(getRating);
@@ -187,8 +211,12 @@ function ProductDetailsPage() {
                                 >
                                     Add to Cart
                                 </Button>
-                                <Button variant="outline" className="w-full sm:w-max px-8 py-7 text-lg font-bold rounded-2xl border-2 border-gray-100 hover:bg-gray-50">
-                                    Wishlist
+                                <Button
+                                    variant="outline"
+                                    onClick={handleWishlistAction}
+                                    className={`w-full sm:w-max px-8 py-7 text-lg font-bold rounded-2xl border-2 hover:bg-gray-50 transition-colors ${isInWishlist ? 'border-[#ff3f6c] text-[#ff3f6c] bg-[#ff3f6c]/5' : 'border-gray-100'}`}
+                                >
+                                    {isInWishlist ? "Saved to Wishlist" : "Wishlist"}
                                 </Button>
                             </>
                         )}

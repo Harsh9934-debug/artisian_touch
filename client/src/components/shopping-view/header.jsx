@@ -22,6 +22,7 @@ import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
+import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import { Label } from "../ui/label";
 
 function MenuItems({ keyword, setKeyword, handleSearch }) {
@@ -82,6 +83,7 @@ function MenuItems({ keyword, setKeyword, handleSearch }) {
 function HeaderRightContent({ isMobile }) {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { wishlistItems } = useSelector((state) => state.shopWishlist);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -91,8 +93,11 @@ function HeaderRightContent({ isMobile }) {
   }
 
   useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
-  }, [dispatch]);
+    if (user?.id) {
+      dispatch(fetchCartItems(user.id));
+      dispatch(fetchWishlistItems(user.id));
+    }
+  }, [dispatch, user?.id]);
 
   console.log(cartItems, "sangam");
 
@@ -100,7 +105,7 @@ function HeaderRightContent({ isMobile }) {
     <div className="flex items-center flex-row gap-6 lg:gap-8">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className={`flex flex-col items-center justify-center cursor-pointer group ${!isMobile ? "hidden lg:flex" : ""}`}>
+          <div className="flex flex-col items-center justify-center cursor-pointer group">
             <User className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
             <span className="text-[11px] font-bold mt-1 text-black">Profile</span>
           </div>
@@ -120,9 +125,15 @@ function HeaderRightContent({ isMobile }) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className={`flex flex-col items-center justify-center cursor-pointer group ${!isMobile ? "hidden lg:flex" : ""}`}>
+      <div
+        onClick={() => navigate("/shop/wishlist")}
+        className="flex flex-col items-center justify-center cursor-pointer group relative"
+      >
         <Heart className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
         <span className="text-[11px] font-bold mt-1 text-black">Wishlist</span>
+        <span className="absolute top-[-6px] right-[-6px] bg-[#ff3f6c] text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+          {wishlistItems?.length || 0}
+        </span>
       </div>
 
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>

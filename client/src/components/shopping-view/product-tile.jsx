@@ -4,12 +4,41 @@ import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { Heart, Share2, Star } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { addToWishlist, deleteWishlistItem, fetchWishlistItems } from "@/store/shop/wishlist-slice";
+import { useToast } from "@/components/ui/use-toast";
 
 function ShoppingProductTile({
   product,
   handleAddtoCart,
 }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { wishlistItems } = useSelector((state) => state.shopWishlist);
+  const { toast } = useToast();
+
+  const isInWishlist = wishlistItems && wishlistItems.length > 0
+    ? wishlistItems.findIndex(item => item.productId === product?._id) > -1
+    : false;
+
+  function handleWishlistAction() {
+    if (isInWishlist) {
+      dispatch(deleteWishlistItem({ userId: user?.id, productId: product?._id })).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchWishlistItems(user?.id));
+          toast({ title: "Removed from wishlist" });
+        }
+      });
+    } else {
+      dispatch(addToWishlist({ userId: user?.id, productId: product?._id })).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(fetchWishlistItems(user?.id));
+          toast({ title: "Added to wishlist" });
+        }
+      });
+    }
+  }
 
   return (
     <Card className="w-full max-w-sm mx-auto group border-none transition-all duration-300 relative bg-white rounded-2xl overflow-hidden">
@@ -42,8 +71,8 @@ function ShoppingProductTile({
 
           {/* Top Right: Actions */}
           <div className="absolute top-3 right-3 flex flex-col gap-2 z-10 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-            <button className="p-2 bg-white/90 hover:bg-white text-gray-900 rounded-full transition-colors">
-              <Heart className="w-4 h-4" />
+            <button onClick={(e) => { e.stopPropagation(); handleWishlistAction(); }} className="p-2 bg-white/90 hover:bg-white text-gray-900 rounded-full transition-colors shadow-sm">
+              <Heart className={`w-4 h-4 ${isInWishlist ? "fill-[#ff3f6c] text-[#ff3f6c]" : ""}`} />
             </button>
             <button className="p-2 bg-white/90 hover:bg-white text-gray-900 rounded-full transition-colors">
               <Share2 className="w-4 h-4" />

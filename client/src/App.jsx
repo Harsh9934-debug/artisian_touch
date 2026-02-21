@@ -23,6 +23,7 @@ const PaypalReturnPage = lazy(() => import("./pages/shopping-view/paypal-return"
 const PaymentSuccessPage = lazy(() => import("./pages/shopping-view/payment-success"));
 const SearchProducts = lazy(() => import("./pages/shopping-view/search"));
 const ProductDetailsPage = lazy(() => import("./pages/shopping-view/product-details"));
+const ShoppingWishlist = lazy(() => import("./pages/shopping-view/wishlist"));
 const UnauthPage = lazy(() => import("./pages/unauth-page"));
 const NotFound = lazy(() => import("./pages/not-found"));
 
@@ -93,6 +94,7 @@ function App() {
             <Route path="payment-success" element={<PaymentSuccessPage />} />
             <Route path="search" element={<SearchProducts />} />
             <Route path="product/:id" element={<ProductDetailsPage />} />
+            <Route path="wishlist" element={<ShoppingWishlist />} />
           </Route>
           <Route path="/unauth-page" element={<UnauthPage />} />
           <Route path="*" element={<NotFound />} />
