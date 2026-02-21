@@ -50,8 +50,8 @@ function ShoppingProductTile({
   }
 
   return (
-    <Card className="w-full max-w-sm mx-auto group border-none transition-all duration-300 relative bg-white rounded-2xl overflow-hidden">
-      <div onClick={() => navigate(`/shop/product/${product?._id}`)} className="cursor-pointer">
+    <Card className="h-full flex flex-col w-full max-w-sm mx-auto group border-none transition-all duration-300 relative bg-white rounded-2xl overflow-hidden">
+      <div onClick={() => navigate(`/shop/product/${product?._id}`)} className="cursor-pointer flex-1 flex flex-col">
         <div className="relative aspect-square overflow-hidden bg-gray-50">
           <img
             src={product?.image}
@@ -72,8 +72,10 @@ function ShoppingProductTile({
               </Badge>
             ) : null}
             {product?.salePrice > 0 ? (
-              <Badge className="bg-[#ff3f6c] text-white border-none px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
-                SALE
+              <Badge className="bg-green-600 text-white border-none px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
+                {`${Math.round(
+                  ((product?.price - product?.salePrice) / product?.price) * 100
+                )}% OFF`}
               </Badge>
             ) : null}
           </div>
@@ -88,28 +90,20 @@ function ShoppingProductTile({
             </button>
           </div>
 
-          {/* Bottom Left: Rating */}
-          <div className="absolute bottom-3 left-3 z-10">
-            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-100">
-              <span className="text-[11px] font-bold text-gray-900">4.1</span>
-              <Star className="w-3 h-3 fill-green-600 text-green-600" />
-              <div className="w-[1px] h-3 bg-gray-300 mx-0.5" />
-              <span className="text-[10px] font-medium text-gray-500">2.5k</span>
-            </div>
-          </div>
         </div>
 
-        <CardContent className="p-4">
+
+        <CardContent className="p-4 flex-1 flex flex-col justify-between">
           <div className="mb-1">
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {brandOptionsMap[product?.brand]}
             </span>
-            <h2 className="text-sm font-semibold text-gray-800 line-clamp-1 group-hover:text-primary transition-colors">
+            <h2 className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary transition-colors">
               {product?.title}
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-auto pt-2">
             <span className="text-base font-bold text-gray-900">
               ${product?.salePrice > 0 ? product?.salePrice : product?.price}
             </span>
@@ -119,7 +113,7 @@ function ShoppingProductTile({
               </span>
             )}
             {product?.salePrice > 0 && (
-              <span className="text-[10px] font-bold text-[#ff3f6c]">
+              <span className="text-[10px] font-bold text-green-600">
                 ({Math.round(((product?.price - product?.salePrice) / product?.price) * 100)}% OFF)
               </span>
             )}

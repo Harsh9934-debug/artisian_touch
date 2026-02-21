@@ -201,7 +201,7 @@ function ProductDetailsPage() {
                                 <span className="text-4xl font-extrabold text-[#ff3f6c]">
                                     ${productDetails?.salePrice}
                                 </span>
-                                <span className="text-sm font-bold text-[#ff3f6c] bg-[#ff3f6c]/10 px-2 py-1 rounded-lg">
+                                <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">
                                     {Math.round(((productDetails?.price - productDetails?.salePrice) / productDetails?.price) * 100)}% OFF
                                 </span>
                             </div>

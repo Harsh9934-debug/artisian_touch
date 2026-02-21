@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { clerkMiddleware, requireAuth } = require("@clerk/express");
+const { createClerkClient } = require("@clerk/backend");
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 const adminProductsRouter = require("./routes/admin/products-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
 
@@ -64,11 +66,25 @@ const enforceOwnership = (req, res, next) => {
   next();
 };
 
+const requireAdmin = async (req, res, next) => {
+  try {
+    const user = await clerkClient.users.getUser(req.auth.userId);
+    if (user.publicMetadata?.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    next();
+  } catch (error) {
+    console.error("Error fetching user for admin check:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
 const protect = [requireAuth(), enforceOwnership];
+const protectAdmin = [requireAuth(), requireAdmin];
 
 // API Routes
-app.use("/api/admin/products", protect, adminProductsRouter);
-app.use("/api/admin/orders", protect, adminOrderRouter);
+app.use("/api/admin/products", protectAdmin, adminProductsRouter);
+app.use("/api/admin/orders", protectAdmin, adminOrderRouter);
 
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/search", shopSearchRouter);
