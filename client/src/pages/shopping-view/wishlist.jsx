@@ -4,18 +4,21 @@ import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
+import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 function ShoppingWishlist() {
-    const { wishlistItems, isLoading } = useSelector((state) => state.shopWishlist);
-    const { user } = useSelector((state) => state.auth);
+    const { wishlistItems, isLoading: isWishlistLoading } = useSelector((state) => state.shopWishlist);
+    const { user, isLoaded: isUserLoaded } = useUser();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { toast } = useToast();
 
     useEffect(() => {
-        if (user?.id) {
+        if (isUserLoaded && user?.id) {
             dispatch(fetchWishlistItems(user.id));
         }
-    }, [dispatch, user]);
+    }, [dispatch, user, isUserLoaded]);
 
     function handleAddtoCart(getCurrentProductId, getTotalStock) {
         // Re-used logic similar to listing page
@@ -37,7 +40,7 @@ function ShoppingWishlist() {
         });
     }
 
-    if (isLoading) {
+    if (!isUserLoaded || isWishlistLoading) {
         return <div className="min-h-[50vh] flex justify-center items-center font-bold text-gray-500">Loading your wishlist...</div>;
     }
 
