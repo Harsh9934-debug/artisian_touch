@@ -21,6 +21,8 @@ function PaypalReturnPage() {
           window.location.href = "/shop/payment-success";
         }
       });
+    } else {
+      window.location.href = "/shop/payment-success";
     }
   }, [paymentId, payerId, dispatch]);
 

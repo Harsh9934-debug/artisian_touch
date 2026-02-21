@@ -102,7 +102,7 @@ function ShoppingCheckout() {
                 toast({
                   title: "Payment successful! Your order is confirmed.",
                 });
-                navigate("/shop/paypal-return"); // Re-using existing success page for now or create new one
+                navigate("/shop/payment-success");
               } else {
                 toast({
                   title: "Payment verification failed.",
