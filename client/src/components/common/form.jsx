@@ -58,15 +58,43 @@ function CommonForm({
             <SelectContent>
               {getControlItem.options && getControlItem.options.length > 0
                 ? getControlItem.options.map((optionItem) => (
-                    <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
-                    </SelectItem>
-                  ))
+                  <SelectItem key={optionItem.id} value={optionItem.id}>
+                    {optionItem.label}
+                  </SelectItem>
+                ))
                 : null}
             </SelectContent>
           </Select>
         );
 
+        break;
+      case "combobox":
+        element = (
+          <div className="relative">
+            <Input
+              name={getControlItem.name}
+              placeholder={getControlItem.placeholder || getControlItem.label}
+              id={getControlItem.name}
+              list={`${getControlItem.name}-datalist`}
+              type={getControlItem.type || "text"}
+              value={value}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  [getControlItem.name]: event.target.value,
+                })
+              }
+            />
+            <datalist id={`${getControlItem.name}-datalist`}>
+              {getControlItem.options &&
+                getControlItem.options.map((optionItem) => (
+                  <option key={optionItem.id} value={optionItem.id}>
+                    {optionItem.label}
+                  </option>
+                ))}
+            </datalist>
+          </div>
+        );
         break;
       case "textarea":
         element = (

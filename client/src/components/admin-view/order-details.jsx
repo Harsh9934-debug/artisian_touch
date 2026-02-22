@@ -12,13 +12,15 @@ import {
 } from "@/store/admin/order-slice";
 import { useToast } from "../ui/use-toast";
 
+import { useUser } from "@clerk/clerk-react";
+
 const initialFormData = {
   status: "",
 };
 
 function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useUser();
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -71,10 +73,10 @@ function AdminOrderDetailsView({ orderDetails }) {
             <Label>
               <Badge
                 className={`py-1 px-3 ${orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
-                      ? "bg-red-600"
-                      : "bg-black"
+                  ? "bg-green-500"
+                  : orderDetails?.orderStatus === "rejected"
+                    ? "bg-red-600"
+                    : "bg-black"
                   }`}
               >
                 {orderDetails?.orderStatus}
@@ -103,7 +105,7 @@ function AdminOrderDetailsView({ orderDetails }) {
           <div className="grid gap-2">
             <div className="font-medium">Shipping Info</div>
             <div className="grid gap-0.5 text-muted-foreground">
-              <span>{user.userName}</span>
+              <span>{user?.fullName || "Guest User"}</span>
               <span>{orderDetails?.addressInfo?.address}</span>
               <span>{orderDetails?.addressInfo?.city}</span>
               <span>{orderDetails?.addressInfo?.pincode}</span>

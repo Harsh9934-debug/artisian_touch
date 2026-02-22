@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const addNewProduct = createAsyncThunk(
-  "/products/addnewproduct",
+  "/adminProducts/addnewproduct",
   async (formData) => {
     const result = await axios.post(
       `${API_URL}/api/admin/products/add`,
@@ -25,7 +25,7 @@ export const addNewProduct = createAsyncThunk(
 );
 
 export const fetchAllProducts = createAsyncThunk(
-  "/products/fetchAllProducts",
+  "/adminProducts/fetchAllProducts",
   async () => {
     const result = await axios.get(
       `${API_URL}/api/admin/products/get`
@@ -36,7 +36,7 @@ export const fetchAllProducts = createAsyncThunk(
 );
 
 export const editProduct = createAsyncThunk(
-  "/products/editProduct",
+  "/adminProducts/editProduct",
   async ({ id, formData }) => {
     const result = await axios.put(
       `${API_URL}/api/admin/products/edit/${id}`,
@@ -53,7 +53,7 @@ export const editProduct = createAsyncThunk(
 );
 
 export const deleteProduct = createAsyncThunk(
-  "/products/deleteProduct",
+  "/adminProducts/deleteProduct",
   async (id) => {
     const result = await axios.delete(
       `${API_URL}/api/admin/products/delete/${id}`

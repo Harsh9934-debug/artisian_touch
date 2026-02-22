@@ -57,10 +57,10 @@ function MenuItems({ keyword, setKeyword, handleSearch }) {
           onClick={() => handleNavigate(menuItem)}
           className="group relative flex items-center lg:h-[80px] py-2 lg:py-0 cursor-pointer"
         >
-          <span className="text-[13px] font-bold tracking-widest text-[#282c3f] uppercase group-hover:text-primary transition-colors">
+          <span className="text-[12px] font-normal tracking-[0.2em] text-[#1a1c24] uppercase group-hover:text-primary transition-colors">
             {menuItem.label}
           </span>
-          <div className="absolute bottom-0 left-0 w-full h-[4px] bg-[#ee5f73] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+          <div className="absolute bottom-[20px] left-0 w-full h-[1px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
         </div>
       ))}
       <div className="hidden lg:flex items-center ml-10">
@@ -71,8 +71,8 @@ function MenuItems({ keyword, setKeyword, handleSearch }) {
             onChange={(e) => setKeyword(e.target.value)}
             onKeyDown={handleSearch}
             type="text"
-            placeholder="Search for products, brands and more"
-            className="w-full bg-[#f5f5f6] rounded-md py-[10px] pl-[40px] pr-4 text-sm text-[#282c3f] placeholder-gray-500 outline-none focus:bg-white focus:border focus:border-gray-200 transition-colors"
+            placeholder="Search our collection..."
+            className="w-full bg-[#f8f8f8] border-b border-transparent focus:border-primary py-[10px] pl-[40px] pr-4 text-sm text-[#1a1c24] placeholder-gray-400 outline-none transition-all"
           />
         </div>
       </div>
@@ -165,7 +165,15 @@ function HeaderRightContent({ isMobile }) {
     <div className="flex items-center flex-row gap-6 lg:gap-8">
       <div className="hidden lg:flex flex-col items-center justify-center cursor-pointer group mt-1">
         <SignedIn>
-          <UserButton />
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="Order history"
+                labelIcon={<UserCog size={15} />}
+                onClick={() => navigate("/shop/account")}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
         </SignedIn>
         <SignedOut>
           <Button onClick={() => navigate("/auth/login")} variant="outline" className="text-xs font-bold uppercase tracking-widest border-[#1a1c24] text-[#1a1c24] hover:bg-[#1a1c24] hover:text-white transition-all rounded-none px-6">
@@ -178,18 +186,18 @@ function HeaderRightContent({ isMobile }) {
         onClick={() => navigate("/shop/wishlist")}
         className="hidden lg:flex flex-col items-center justify-center cursor-pointer group relative"
       >
-        <Heart className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
-        <span className="text-[11px] font-bold mt-1 text-black">Wishlist</span>
-        <span className="absolute top-[-6px] right-[-6px] bg-[#ff3f6c] text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+        <Heart className="w-[20px] h-[20px] text-[#1a1c24] group-hover:text-primary transition-colors stroke-[1.5px]" />
+        <span className="text-[10px] font-medium mt-1 text-black uppercase tracking-widest">Wishlist</span>
+        <span className="absolute top-[-4px] right-[-4px] bg-primary text-white text-[9px] font-bold w-[16px] h-[16px] flex items-center justify-center rounded-full">
           {wishlistItems?.length || 0}
         </span>
       </div>
 
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
         <div onClick={() => setOpenCartSheet(true)} className="flex flex-col items-center justify-center cursor-pointer group relative">
-          <ShoppingBag className="w-[20px] h-[20px] text-gray-700 group-hover:text-black transition-colors" />
-          <span className="text-[11px] font-bold mt-1 text-black">Bag</span>
-          <span className="absolute top-[-6px] right-[-6px] bg-[#ff3f6c] text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+          <ShoppingBag className="w-[20px] h-[20px] text-[#1a1c24] group-hover:text-primary transition-colors stroke-[1.5px]" />
+          <span className="text-[10px] font-medium mt-1 text-black uppercase tracking-widest">Bag</span>
+          <span className="absolute top-[-4px] right-[-4px] bg-primary text-white text-[9px] font-bold w-[16px] h-[16px] flex items-center justify-center rounded-full">
             {cartItems?.items?.length || 0}
           </span>
         </div>

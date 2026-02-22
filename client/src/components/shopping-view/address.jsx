@@ -113,36 +113,45 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   console.log(addressList, "addressList");
 
   return (
-    <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2  gap-2">
-        {addressList && addressList.length > 0
-          ? addressList.map((singleAddressItem) => (
-            <AddressCard
-              selectedId={selectedId}
-              handleDeleteAddress={handleDeleteAddress}
-              addressInfo={singleAddressItem}
-              handleEditAddress={handleEditAddress}
-              setCurrentSelectedAddress={setCurrentSelectedAddress}
-            />
-          ))
-          : null}
+    <div className="bg-white">
+      <div className="flex flex-col gap-8 mb-12">
+        <h2 className="text-2xl font-serif font-normal text-[#1a1c24]">Shipping Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {addressList && addressList.length > 0
+            ? addressList.map((singleAddressItem) => (
+              <AddressCard
+                key={singleAddressItem._id}
+                selectedId={selectedId}
+                handleDeleteAddress={handleDeleteAddress}
+                addressInfo={singleAddressItem}
+                handleEditAddress={handleEditAddress}
+                setCurrentSelectedAddress={setCurrentSelectedAddress}
+              />
+            ))
+            : (
+              <div className="col-span-full py-12 border border-dashed border-gray-100 text-center italic text-gray-400">
+                No addresses saved yet.
+              </div>
+            )}
+        </div>
       </div>
-      <CardHeader>
-        <CardTitle>
-          {currentEditedId !== null ? "Edit Address" : "Add New Address"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <CommonForm
-          formControls={addressFormControls}
-          formData={formData}
-          setFormData={setFormData}
-          buttonText={currentEditedId !== null ? "Edit" : "Add"}
-          onSubmit={handleManageAddress}
-          isBtnDisabled={!isFormValid()}
-        />
-      </CardContent>
-    </Card>
+
+      <div className="bg-[#FAF9F6] p-8 md:p-12">
+        <h3 className="text-lg font-serif mb-8 text-[#1a1c24]">
+          {currentEditedId !== null ? "Modify Address" : "Add New Destination"}
+        </h3>
+        <div className="max-w-xl">
+          <CommonForm
+            formControls={addressFormControls}
+            formData={formData}
+            setFormData={setFormData}
+            buttonText={currentEditedId !== null ? "Update Address" : "Save Address"}
+            onSubmit={handleManageAddress}
+            isBtnDisabled={!isFormValid()}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 

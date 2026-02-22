@@ -61,7 +61,7 @@ const shoppingProductSlice = createSlice({
         state.isLoading = false;
 
         // If it's page 2 or higher, append the products
-        if (action.meta.arg.filterParams?.page > 1) {
+        if (action.meta?.arg?.filterParams?.page > 1) {
           state.productList = [...state.productList, ...action.payload.data];
         } else {
           state.productList = action.payload.data;

@@ -15,10 +15,11 @@ import {
   fetchAllFilteredProducts,
   fetchProductDetails,
 } from "@/store/shop/products-slice";
-import { ArrowUpDownIcon } from "lucide-react";
+import { ArrowUpDownIcon, FilterIcon } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useUser } from "@clerk/clerk-react";
 
 function createSearchParamsHelper(filterParams) {
@@ -171,60 +172,85 @@ function ShoppingListing() {
   console.log(productList, "productListproductListproductList");
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
-      <ProductFilter filters={filters} handleFilter={handleFilter} />
-      <div className="bg-background w-full rounded-lg">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-lg font-extrabold">All Products</h2>
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground">
-              {productList?.length} Products
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1"
-                >
-                  <ArrowUpDownIcon className="h-4 w-4" />
-                  <span>Sort by</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
-                  {sortOptions.map((sortItem) => (
-                    <DropdownMenuRadioItem
-                      value={sortItem.id}
-                      key={sortItem.id}
-                    >
-                      {sortItem.label}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-          {productList && productList.length > 0
-            ? productList.map((productItem) => (
-              <ShoppingProductTile
-                key={productItem._id || productItem.id}
-                product={productItem}
-                handleAddtoCart={handleAddtoCart}
-              />
-            ))
-            : <div className="col-span-full text-center text-gray-500 py-10 text-xl font-medium">No products found.</div>}
-        </div>
+    <div className="bg-white min-h-screen">
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-[250px_1fr] gap-12 px-6 md:px-12 py-12">
+        <aside className="hidden md:block">
+          <ProductFilter filters={filters} handleFilter={handleFilter} />
+        </aside>
+        <main className="w-full">
+          <div className="flex items-center justify-between mb-12 pb-6 border-b border-gray-100">
+            <div>
+              <h2 className="text-3xl font-serif font-normal text-[#1a1c24] mb-2">Our Collection</h2>
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+                Showing {productList?.length || 0} exquisite pieces
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="md:hidden flex items-center gap-2 text-[11px] uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors px-0"
+                  >
+                    <FilterIcon className="h-4 w-4" />
+                    <span>Filter</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                  <ProductFilter filters={filters} handleFilter={handleFilter} />
+                </SheetContent>
+              </Sheet>
 
-        {productList && productList.length > 0 && hasMore && (
-          <div ref={observerTarget} className="flex justify-center mt-6 mb-8 w-full h-10">
-            <span className="text-gray-500 font-medium animate-pulse">Loading more...</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-2 text-[11px] uppercase tracking-widest hover:bg-transparent hover:text-primary transition-colors"
+                  >
+                    <ArrowUpDownIcon className="h-3 w-3" />
+                    <span>Sort Collections</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px] rounded-none border-gray-100 shadow-xl">
+                  <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
+                    {sortOptions.map((sortItem) => (
+                      <DropdownMenuRadioItem
+                        value={sortItem.id}
+                        key={sortItem.id}
+                        className="text-[11px] uppercase tracking-wider py-3 focus:bg-gray-50 cursor-pointer"
+                      >
+                        {sortItem.label}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-        )}
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            {productList && productList.length > 0
+              ? productList.map((productItem) => (
+                <ShoppingProductTile
+                  key={productItem._id || productItem.id}
+                  product={productItem}
+                  handleAddtoCart={handleAddtoCart}
+                />
+              ))
+              : <div className="col-span-full text-center py-32 border border-dashed border-gray-100">
+                <p className="text-gray-400 font-serif italic mb-2">No pieces found in this selection.</p>
+                <Button onClick={() => setFilters({})} variant="link" className="text-black uppercase tracking-widest text-[10px]">Clear all filters</Button>
+              </div>}
+          </div>
+
+          {productList && productList.length > 0 && hasMore && (
+            <div ref={observerTarget} className="flex justify-center mt-20 mb-8 w-full h-10">
+              <span className="text-gray-400 font-serif italic text-sm animate-pulse">Unveiling more pieces...</span>
+            </div>
+          )}
+        </main>
       </div>
-
     </div>
   );
 }

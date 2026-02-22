@@ -14,7 +14,7 @@ function ProductImageUpload({
   uploadedImageUrl,
   setUploadedImageUrl,
   setImageLoadingState,
-  isEditMode,
+  isEditMode = false,
   isCustomStyling = false,
 }) {
   const inputRef = useRef(null);

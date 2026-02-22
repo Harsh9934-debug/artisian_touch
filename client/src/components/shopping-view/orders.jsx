@@ -41,69 +41,70 @@ function ShoppingOrders() {
   console.log(orderDetails, "orderDetails");
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Order History</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Order Date</TableHead>
-                <TableHead>Order Status</TableHead>
-                <TableHead>Order Price</TableHead>
-                <TableHead>
-                  <span className="sr-only">Details</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orderList && orderList.length > 0
-                ? orderList.map((orderItem) => (
-                  <TableRow key={orderItem?._id}>
-                    <TableCell>{orderItem?._id}</TableCell>
-                    <TableCell>{orderItem?.orderDate.split("T")[0]}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={`py-1 px-3 ${orderItem?.orderStatus === "confirmed"
-                          ? "bg-green-500"
-                          : orderItem?.orderStatus === "rejected"
-                            ? "bg-red-600"
-                            : "bg-black"
-                          }`}
+    <div className="bg-white">
+      <div className="mb-12 border-b border-gray-100 pb-6">
+        <h2 className="text-2xl font-serif font-normal text-[#1a1c24]">Order History</h2>
+      </div>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-gray-100">
+              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-gray-400">Order Reference</TableHead>
+              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-gray-400">Date</TableHead>
+              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-gray-400">Status</TableHead>
+              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-gray-400">Value</TableHead>
+              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-gray-400 text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orderList && orderList.length > 0
+              ? orderList.map((orderItem) => (
+                <TableRow key={orderItem?._id} className="group border-gray-50 hover:bg-[#FAF9F6] transition-colors">
+                  <TableCell className="font-light text-xs text-gray-500">{orderItem?._id}</TableCell>
+                  <TableCell className="font-light text-xs">{orderItem?.orderDate.split("T")[0]}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`text-[9px] uppercase tracking-widest py-1 px-3 rounded-none ${orderItem?.orderStatus === "confirmed"
+                        ? "bg-green-50 text-green-700"
+                        : orderItem?.orderStatus === "rejected"
+                          ? "bg-red-50 text-red-700"
+                          : "bg-gray-100 text-gray-700"
+                        }`}
+                    >
+                      {orderItem?.orderStatus}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-medium text-xs">₹{orderItem?.totalAmount}</TableCell>
+                  <TableCell className="text-right">
+                    <Dialog
+                      open={openDetailsDialog}
+                      onOpenChange={() => {
+                        setOpenDetailsDialog(false);
+                        dispatch(resetOrderDetails());
+                      }}
+                    >
+                      <button
+                        onClick={() => handleFetchOrderDetails(orderItem?._id)}
+                        className="text-[10px] uppercase tracking-[0.2em] text-primary hover:text-black transition-colors font-semibold"
                       >
-                        {orderItem?.orderStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>₹{orderItem?.totalAmount}</TableCell>
-                    <TableCell>
-                      <Dialog
-                        open={openDetailsDialog}
-                        onOpenChange={() => {
-                          setOpenDetailsDialog(false);
-                          dispatch(resetOrderDetails());
-                        }}
-                      >
-                        <Button
-                          onClick={() =>
-                            handleFetchOrderDetails(orderItem?._id)
-                          }
-                        >
-                          View Details
-                        </Button>
-                        <ShoppingOrderDetailsView orderDetails={orderDetails} />
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))
-                : null}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+                        Review details
+                      </button>
+                      <ShoppingOrderDetailsView orderDetails={orderDetails} />
+                    </Dialog>
+                  </TableCell>
+                </TableRow>
+              ))
+              : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-20 italic text-gray-400 font-serif">
+                    No orders found in your history.
+                  </TableCell>
+                </TableRow>
+              )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }
 

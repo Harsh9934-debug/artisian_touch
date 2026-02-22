@@ -6,18 +6,20 @@ import { Separator } from "../ui/separator";
 
 function ProductFilter({ filters, handleFilter }) {
   return (
-    <div className="bg-background rounded-lg">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-extrabold">Filters</h2>
+    <div className="bg-white">
+      <div className="py-6 border-b border-gray-100 mb-8">
+        <h2 className="text-xl font-serif font-normal text-[#1a1c24] tracking-tight">Refine Selection</h2>
       </div>
-      <div className="p-4 space-y-4">
+      <div className="space-y-10">
         {Object.keys(filterOptions).map((keyItem) => (
-          <Fragment>
+          <Fragment key={keyItem}>
             <div>
-              <h3 className="text-base font-bold">{keyItem}</h3>
-              <div className="grid gap-2 mt-2">
+              <h3 className="text-[10px] font-semibold text-primary uppercase tracking-[0.2em] mb-6">
+                {keyItem}
+              </h3>
+              <div className="grid gap-4 mt-2">
                 {filterOptions[keyItem].map((option) => (
-                  <Label className="flex font-medium items-center gap-2 ">
+                  <Label key={option.id} className="flex font-light items-center gap-3 cursor-pointer group hover:text-primary transition-colors">
                     <Checkbox
                       checked={
                         filters &&
@@ -26,13 +28,13 @@ function ProductFilter({ filters, handleFilter }) {
                         filters[keyItem].indexOf(option.id) > -1
                       }
                       onCheckedChange={() => handleFilter(keyItem, option.id)}
+                      className="rounded-none border-gray-200 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    {option.label}
+                    <span className="text-sm text-gray-600 group-hover:text-primary">{option.label}</span>
                   </Label>
                 ))}
               </div>
             </div>
-            <Separator />
           </Fragment>
         ))}
       </div>

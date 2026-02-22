@@ -136,39 +136,58 @@ function ShoppingCheckout() {
 
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left Column: Address */}
-        <div className="flex-1">
-          <Address
-            selectedId={currentSelectedAddress}
-            setCurrentSelectedAddress={setCurrentSelectedAddress}
-          />
+    <div className="bg-white min-h-screen py-16">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+        <div className="mb-16 border-b border-gray-100 pb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-serif font-normal text-[#1a1c24] mb-4">Secure Checkout</h1>
+            <p className="text-xs text-gray-400 uppercase tracking-[0.2em]">Complete your acquisition with confidence</p>
+          </div>
         </div>
 
-        {/* Right Column: Order Summary */}
-        <div className="w-full lg:w-[450px] flex flex-col gap-6 lg:pl-8 lg:border-l">
-          <h2 className="text-xl font-bold border-b pb-4">Your Order</h2>
-          <div className="flex flex-col gap-4">
-            {cartItems && cartItems.items && cartItems.items.length > 0
-              ? cartItems.items.map((item) => (
-                <UserCartItemsContent key={item.productId || item.id} cartItem={item} />
-              ))
-              : <p className="text-gray-500">Your cart is empty.</p>}
+        <div className="flex flex-col lg:flex-row gap-20">
+          {/* Left Column: Address */}
+          <div className="flex-1">
+            <Address
+              selectedId={currentSelectedAddress}
+              setCurrentSelectedAddress={setCurrentSelectedAddress}
+            />
           </div>
 
-          <div className="space-y-4 mt-4">
-            <div className="flex justify-between border-t pt-4">
-              <span className="font-bold">Total Amount</span>
-              <span className="font-bold">₹{totalCartAmount}</span>
+          {/* Right Column: Order Summary */}
+          <div className="w-full lg:w-[450px]">
+            <div className="bg-[#FAF9F6] p-8 md:p-12 sticky top-32">
+              <h2 className="text-xl font-serif mb-12 text-[#1a1c24]">Bag Summary</h2>
+              <div className="flex flex-col gap-8 mb-12 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                {cartItems && cartItems.items && cartItems.items.length > 0
+                  ? cartItems.items.map((item) => (
+                    <UserCartItemsContent key={item.productId || item.id} cartItem={item} />
+                  ))
+                  : <p className="text-gray-400 italic font-serif">Your bag is empty.</p>}
+              </div>
+
+              <div className="space-y-6 pt-8 border-t border-gray-200">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs uppercase tracking-[0.2em] text-gray-400">Total Selection Value</span>
+                  <span className="text-2xl font-normal text-[#1a1c24]">₹{totalCartAmount}</span>
+                </div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center italic">
+                  Luxury packaging and global shipping included
+                </p>
+              </div>
+
+              <div className="mt-12">
+                <Button
+                  onClick={handleInitiateRazorpayPayment}
+                  className="luxury-button w-full bg-black text-white hover:bg-primary py-8 rounded-none transition-all"
+                  disabled={isPaymentStart}
+                >
+                  {isPaymentStart
+                    ? "UNVEILING PAYMENT GATEWAY..."
+                    : "CHECKOUT WITH RAZORPAY"}
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="w-full mt-2">
-            <Button onClick={handleInitiateRazorpayPayment} className="w-full h-12">
-              {isPaymentStart
-                ? "Processing Payment..."
-                : "Checkout with Razorpay"}
-            </Button>
           </div>
         </div>
       </div>

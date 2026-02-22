@@ -10,37 +10,26 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 function SearchProducts() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [searchParams] = useSearchParams();
+  const keywordFromUrl = searchParams.get("keyword") || "";
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const dispatch = useDispatch();
   const { searchResults } = useSelector((state) => state.shopSearch);
   const { productDetails } = useSelector((state) => state.shopProducts);
-
-  const { user } = useSelector((state) => state.auth);
-
+  const { user } = useUser();
   const { cartItems } = useSelector((state) => state.shopCart);
   const { toast } = useToast();
-  useEffect(() => {
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
-      setTimeout(() => {
-        setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-        dispatch(getSearchResults(keyword));
-      }, 1000);
-    } else {
-      setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
-      dispatch(resetSearchResults());
-    }
-  }, [keyword]);
 
   useEffect(() => {
-    const urlKeyword = searchParams.get("keyword");
-    if (urlKeyword !== null && urlKeyword !== keyword) {
-      setKeyword(urlKeyword);
+    if (keywordFromUrl && keywordFromUrl.trim().length > 3) {
+      dispatch(getSearchResults(keywordFromUrl));
+    } else {
+      dispatch(resetSearchResults());
     }
-  }, [searchParams]);
+  }, [keywordFromUrl, dispatch]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     console.log(cartItems);
@@ -91,18 +80,41 @@ function SearchProducts() {
   console.log(searchResults, "searchResults");
 
   return (
-    <div className="container mx-auto md:px-6 px-4 py-8">
-      {!searchResults.length ? (
-        <h1 className="text-5xl font-extrabold">No result found!</h1>
-      ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        {searchResults.map((item) => (
-          <ShoppingProductTile
-            handleAddtoCart={handleAddtoCart}
-            product={item}
-            handleGetProductDetails={handleGetProductDetails}
-          />
-        ))}
+    <div className="container mx-auto px-6 md:px-12 py-16 bg-white min-h-screen">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="mb-12 border-b border-gray-100 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-serif font-normal text-[#1a1c24] mb-2 uppercase tracking-wide">
+              {keywordFromUrl ? `Search Results for "${keywordFromUrl}"` : "Search Collection"}
+            </h1>
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">
+              Discover timeless elegance in every piece
+            </p>
+          </div>
+          {searchResults.length > 0 && (
+            <span className="text-[11px] text-primary uppercase tracking-widest border-b border-primary pb-1">
+              {searchResults.length} Pieces Found
+            </span>
+          )}
+        </div>
+
+        {!searchResults.length && keywordFromUrl.trim().length > 3 ? (
+          <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-gray-100">
+            <p className="text-xl font-serif italic text-gray-400 mb-2">No masterpieces found for your search.</p>
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest">Try adjusting your refine parameters or explore our curated collections</p>
+          </div>
+        ) : null}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {searchResults.map((item) => (
+            <ShoppingProductTile
+              key={item._id}
+              handleAddtoCart={handleAddtoCart}
+              product={item}
+              handleGetProductDetails={handleGetProductDetails}
+            />
+          ))}
+        </div>
       </div>
       <ProductDetailsDialog
         open={openDetailsDialog}
