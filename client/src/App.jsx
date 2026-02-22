@@ -28,6 +28,80 @@ const ShoppingWishlist = lazy(() => import("./pages/shopping-view/wishlist"));
 const UnauthPage = lazy(() => import("./pages/unauth-page"));
 const NotFound = lazy(() => import("./pages/not-found"));
 
+const GlobalSkeleton = () => (
+  <div className="flex flex-col bg-white overflow-hidden min-h-screen">
+    {/* Header Skeleton */}
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <div className="flex h-16 items-center justify-between px-4 md:px-6 relative">
+        <div className="flex items-center gap-4">
+          <Skeleton className="w-10 h-10 rounded-full bg-gray-200" />
+        </div>
+        <div className="hidden lg:flex flex-1 justify-center items-center gap-8">
+          {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-4 w-20 bg-gray-200" />)}
+        </div>
+        <div className="flex items-center gap-4">
+          <Skeleton className="w-[180px] h-10 rounded-md bg-gray-200 hidden md:block" />
+          <Skeleton className="w-10 h-10 rounded-full bg-gray-200" />
+          <Skeleton className="w-10 h-10 rounded-full bg-gray-200 hidden sm:block" />
+        </div>
+      </div>
+    </header>
+
+    {/* Body Skeleton */}
+    <main className="flex flex-col w-full flex-grow">
+      {/* Hero Skeleton */}
+      <section className="w-full px-4 md:px-6 lg:px-12 py-4 md:py-8 bg-white">
+        <div className="relative w-full max-w-[1400px] mx-auto h-[45vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh] rounded-[1.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl bg-[#151515]">
+          <div className="absolute inset-0 bg-black flex items-center">
+            <div className="absolute inset-0 w-full h-full flex justify-end">
+              <div className="w-full md:w-4/5 lg:w-3/4 h-full relative">
+                <Skeleton className="w-full h-full rounded-none bg-white/5" />
+                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black via-black/60 md:via-black/20 to-transparent" />
+              </div>
+            </div>
+
+            <div className="absolute inset-0 flex items-center pointer-events-none">
+              <div className="w-full h-full px-6 md:px-16 lg:px-24 flex flex-col justify-end md:justify-center pb-12 md:pb-0">
+                <div className="w-full md:w-3/5 lg:w-1/2 relative z-10">
+                  <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
+                    <Skeleton className="h-4 w-32 bg-white/20" />
+                    <Skeleton className="h-4 w-24 bg-white/20" />
+                  </div>
+                  <Skeleton className="h-12 md:h-16 lg:h-20 w-3/4 md:w-full bg-white/20 mb-3 md:mb-6" />
+                  <Skeleton className="h-6 w-36 bg-white/20 mt-1 md:mt-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center items-center gap-2 md:gap-3 mt-4 md:mt-6">
+          <Skeleton className="h-1.5 md:h-2 w-8 md:w-10 bg-black rounded-full" />
+          <Skeleton className="h-1.5 md:h-2 w-4 md:w-5 bg-gray-200 rounded-full" />
+          <Skeleton className="h-1.5 md:h-2 w-4 md:w-5 bg-gray-200 rounded-full" />
+        </div>
+      </section>
+
+      {/* Category Grid Skeleton */}
+      <section className="py-7 px-6 md:px-12">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="flex justify-between items-end mb-16">
+            <div>
+              <Skeleton className="h-10 md:h-12 w-48 md:w-64 bg-gray-200 mb-4" />
+              <Skeleton className="h-4 md:h-6 w-64 md:w-96 bg-gray-200" />
+            </div>
+            <Skeleton className="h-6 w-24 bg-gray-200 hidden sm:block" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className={`w-full h-[300px] md:h-[400px] rounded-[2.5rem] bg-gray-200 ${i > 1 ? 'hidden lg:block' : ''} ${i === 1 ? 'hidden md:block' : ''}`} />
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+);
+
 function App() {
   const { isLoaded, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
@@ -42,11 +116,11 @@ function App() {
     }
   }, [isSignedIn, clerkUser]);
 
-  if (!isLoaded) return <Skeleton className="w-[800px] bg-black h-[600px]" />;
+  if (!isLoaded) return <GlobalSkeleton />;
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-      <Suspense fallback={<Skeleton className="w-full h-[600px] bg-gray-100" />}>
+      <Suspense fallback={<GlobalSkeleton />}>
         <Routes>
           <Route
             path="/"

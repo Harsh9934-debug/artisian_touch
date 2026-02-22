@@ -20,6 +20,7 @@ import { getFeatureImages } from "@/store/common-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { useUser } from "@clerk/clerk-react";
 import { Testimonials } from "@/components/ui/unique-testimonial";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const categoriesWithImages = [
   { id: "painting", label: "Painting", image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2070&auto=format&fit=crop" },
@@ -95,95 +96,102 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[85vh] w-full overflow-hidden">
-        {featureImageList && featureImageList.length > 0 ? (
-          featureImageList.map((slide, index) => (
-            <div
-              key={index}
-              className={`${index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute inset-0 transition-opacity duration-1000`}
-            >
-              <img
-                src={slide?.image}
-                alt="Hero"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-center px-6">
-                <div className="max-w-4xl">
-                  <span className="text-white uppercase tracking-[0.3em] text-sm mb-4 block animate-fade-in">
-                    The Artist's Studio
-                  </span>
-                  <h1 className="text-5xl md:text-8xl text-white font-normal mb-8 leading-tight">
-                    Artisan Touch <br /> Supplies
-                  </h1>
-                  <Button
-                    onClick={() => navigate("/shop/listing")}
-                    className="luxury-button bg-primary text-white hover:bg-white hover:text-black"
-                  >
-                    Explore Supplies
-                  </Button>
+      {/* Hero Section */}
+      <section className="w-full px-4 md:px-6 lg:px-12 py-4 md:py-8 bg-white">
+        <div className="relative w-full max-w-[1400px] mx-auto h-[45vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh] rounded-[1.5rem] md:rounded-[3rem] overflow-hidden shadow-2xl bg-black">
+          {featureImageList && featureImageList.length > 0 ? (
+            featureImageList.map((slide, index) => (
+              <div
+                key={index}
+                className={`${index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"} absolute inset-0 transition-opacity duration-1000 bg-black`}
+              >
+                {/* Image on the right blending into the black left */}
+                <div className="absolute inset-0 w-full h-full flex justify-end">
+                  <div className="w-full md:w-4/5 lg:w-3/4 h-full relative">
+                    <img
+                      src={slide?.image}
+                      alt="Hero"
+                      className="absolute w-full h-full object-cover object-center md:object-right opacity-80 md:opacity-100"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black via-black/60 md:via-black/20 to-transparent" />
+                  </div>
+                </div>
+
+                {/* Content Overlay */}
+                <div className="absolute inset-0 flex items-center pointer-events-none">
+                  <div className="w-full h-full px-6 md:px-16 lg:px-24 flex flex-col justify-end md:justify-center pb-12 md:pb-0">
+                    <div className="w-full md:w-3/5 lg:w-1/2 relative z-10 pointer-events-auto">
+                      <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
+                        <span className="text-white font-mono tracking-[0.2em] md:tracking-[0.3em] text-[9px] md:text-[11px] uppercase font-bold border-r border-white/40 pr-3 md:pr-4 py-0.5">ARTISAN TOUCH</span>
+                        <span className="text-[#FFD319] font-black text-[10px] md:text-[13px] tracking-widest uppercase italic">SUPPLIES</span>
+                      </div>
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bold mb-3 md:mb-6 leading-[1.1] tracking-tight">
+                        The Artist's Studio <br className="hidden md:block" /> Collection
+                      </h1>
+                      <Button
+                        onClick={() => navigate("/shop/listing")}
+                        variant="link"
+                        className="text-white bg-transparent hover:text-white/80 p-0 text-sm md:text-base font-normal flex items-center justify-start transition-colors mt-1 md:mt-4 h-auto border-b border-transparent hover:border-white w-max rounded-none pb-0.5"
+                      >
+                        Explore Supplies
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="absolute inset-0 bg-black flex items-center">
+              <div className="absolute inset-0 w-full h-full flex justify-end">
+                <div className="w-full md:w-4/5 lg:w-3/4 h-full relative">
+                  <Skeleton className="w-full h-full rounded-none bg-white/5" />
+                  <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black via-black/60 md:via-black/20 to-transparent" />
+                </div>
+              </div>
+
+              <div className="absolute inset-0 flex items-center pointer-events-none">
+                <div className="w-full h-full px-6 md:px-16 lg:px-24 flex flex-col justify-end md:justify-center pb-12 md:pb-0">
+                  <div className="w-full md:w-3/5 lg:w-1/2 relative z-10">
+                    <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
+                      <Skeleton className="h-4 w-32 bg-white/20" />
+                      <Skeleton className="h-4 w-24 bg-white/20" />
+                    </div>
+                    <Skeleton className="h-12 md:h-16 lg:h-20 w-3/4 md:w-full bg-white/20 mb-3 md:mb-6" />
+                    <Skeleton className="h-6 w-36 bg-white/20 mt-1 md:mt-4" />
+                  </div>
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="absolute inset-0 bg-[#1a1c24] flex items-center justify-center text-center px-6">
-            <div className="max-w-4xl">
-              <span className="text-white uppercase tracking-[0.3em] text-sm mb-4 block animate-fade-in">
-                The Artist's Studio
-              </span>
-              <h1 className="text-5xl md:text-8xl text-white font-normal mb-8 leading-tight">
-                Artisan Touch <br /> Supplies
-              </h1>
-              <Button
-                onClick={() => navigate("/shop/listing")}
-                className="luxury-button bg-primary text-white hover:bg-white hover:text-black"
-              >
-                Explore Supplies
-              </Button>
-            </div>
+          )}
+        </div>
+
+        {/* Dot Indicators */}
+        {featureImageList && featureImageList.length > 1 && (
+          <div className="flex justify-center items-center gap-2 md:gap-3 mt-4 md:mt-6">
+            {featureImageList.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-1.5 md:h-2 rounded-full transition-all duration-300 ${index === currentSlide
+                  ? "w-8 md:w-10 bg-black"
+                  : "w-4 md:w-5 bg-gray-200 hover:bg-gray-400"
+                  }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         )}
-
-        <div className="absolute bottom-10 left-10 flex gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() =>
-              setCurrentSlide(
-                (prevSlide) =>
-                  (prevSlide - 1 + featureImageList.length) %
-                  featureImageList.length
-              )
-            }
-            className="rounded-full bg-white/10 border-white/20 text-white hover:bg-white hover:text-black"
-          >
-            <ChevronLeftIcon className="w-5 h-5" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() =>
-              setCurrentSlide(
-                (prevSlide) => (prevSlide + 1) % featureImageList.length
-              )
-            }
-            className="rounded-full bg-white/10 border-white/20 text-white hover:bg-white hover:text-black"
-          >
-            <ChevronRightIcon className="w-5 h-5" />
-          </Button>
-        </div>
       </section>
 
       {/* Category Grid */}
-      <section className="py-24 px-6 md:px-12">
+      <section className="py-7 px-6 md:px-12">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex justify-between items-end mb-16">
             <div>
               <h2 className="text-4xl md:text-5xl mb-4 font-normal">Our Collection</h2>
               <p className="text-muted-foreground">Premium tools and mediums for the modern artisan</p>
             </div>
-            <Button variant="link" className="text-black p-0 flex items-center gap-2 group">
+            <Button variant="link" onClick={() => navigate("/shop/listing")} className="text-black p-0 flex items-center gap-2 group">
               View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -254,9 +262,6 @@ function ShoppingHome() {
               </div>
             </div>
 
-            <Button variant="link" className="text-black p-0 flex items-center gap-2 justify-start group underline underline-offset-8 decoration-black/20 hover:decoration-black transition-all">
-              Read full story <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
           </div>
         </div>
       </section>
