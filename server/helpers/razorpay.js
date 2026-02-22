@@ -11,6 +11,8 @@ if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
     console.error(
         "RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing. Payment functionality will be disabled."
     );
+
+    
 }
 
 module.exports = razorpayInstance;
