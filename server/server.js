@@ -18,9 +18,9 @@ const shopReviewRouter = require("./routes/shop/review-routes");
 const shopWishlistRouter = require("./routes/shop/wishlist-routes");
 
 const commonFeatureRouter = require("./routes/common/feature-routes");
-const commonUserRouter = require("./routes/common/user-routes");
 const clerkWebhooksRouter = require("./routes/webhooks/clerk-webhooks");
 
+const morgan = require("morgan");
 //create a database connection -> u can also
 //create a separate file for this and then import/use that file here
 
@@ -31,6 +31,8 @@ mongoose
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.use(morgan("dev"));
 
 app.use(
   cors({
@@ -96,7 +98,6 @@ app.use("/api/shop/order", protect, shopOrderRouter);
 app.use("/api/shop/wishlist", protect, shopWishlistRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
-app.use("/api/common/user", protect, commonUserRouter);
 
 app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
 // Trigger backend nodemon restart

@@ -18,16 +18,9 @@ export const fetchAllFilteredProducts = createAsyncThunk(
       page: filterParams?.page || 1,
     });
 
-    const cacheKey = `products_${query.toString()}`;
-    const cachedData = localStorage.getItem(cacheKey);
-
     const result = await axios.get(
       `${API_URL}/api/shop/products/get?${query}`
     );
-
-    if (result?.data?.success) {
-      localStorage.setItem(cacheKey, JSON.stringify(result?.data));
-    }
 
     return result?.data;
   }

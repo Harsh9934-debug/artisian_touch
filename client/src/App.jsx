@@ -106,16 +106,6 @@ function App() {
   const { isLoaded, isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
 
-  useEffect(() => {
-    if (isSignedIn && clerkUser?.id) {
-      axios.post(`${API_URL}/api/common/user/sync`, {
-        userId: clerkUser.id,
-        email: clerkUser.primaryEmailAddress?.emailAddress,
-        userName: clerkUser.fullName || clerkUser.username || clerkUser.firstName || clerkUser.primaryEmailAddress?.emailAddress?.split("@")[0],
-      }).catch((err) => console.log("Failed to sync Clerk user to MongoDB", err));
-    }
-  }, [isSignedIn, clerkUser]);
-
   if (!isLoaded) return <GlobalSkeleton />;
 
   return (
